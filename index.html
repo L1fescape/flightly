@@ -1,0 +1,30 @@
+<html>
+<head>
+  <title>Flightly</title>
+	
+	<!-- Stylesheets -->
+	<link href='css/main.css' rel='stylesheet' type='text/css'>
+
+	<!-- jQuery -->
+  <script src="/libs/jquery.js"></script>
+
+	<!-- Underscore & Backbone -->
+  <script src="/libs/underscore.js"></script>
+  <script src="/libs/backbone.js"></script>
+
+</head>
+<body>
+  <canvas id="gameBoard"></canvas>
+</body>
+<script src="/js/core/models/engine.js"></script>
+<script src="/js/core/models/world.js"></script>
+<script src="/js/core/models/player.js"></script>
+<script src="/js/core/views/game.js"></script>
+<script>
+	$(document).ready(function() {
+    window.Engine = new Engine();
+    window.Engine.init();
+    window.Engine.start();
+	});
+</script>
+</html>

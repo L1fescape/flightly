@@ -7,8 +7,8 @@ var Player = Backbone.Model.extend({
     width : 40,
     height: 40
   },
-	pressed : {},
-	keys : function(key, state) {
+  pressed : {},
+  keys : function(key, state) {
     if ( key == 87 && state == "keydown" )
       this.pos.y -= 20;
     if ( key == 83 && state == "keydown" )
@@ -17,7 +17,7 @@ var Player = Backbone.Model.extend({
       this.pos.x += 20;
     if ( key == 65 && state == "keydown" )
       this.pos.x -= 20;
-	},
+  },
   draw : function(ctx) {
     ctx.fillStyle = "#4D8B4D";
     ctx.beginPath();
@@ -25,5 +25,5 @@ var Player = Backbone.Model.extend({
     ctx.closePath();
     ctx.fill();
   }
-		
+    
 });

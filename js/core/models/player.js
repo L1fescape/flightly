@@ -1,22 +1,21 @@
 var Player = Backbone.Model.extend({
   settings : {
     playerSpeed : 5,
-    bulletSpeed : 10
+    bulletSpeed : 10,
+    width : 40,
+    height: 40,
+    bulletSize : 10
   },
   pos : {
     x : 40,
     y : 40
   },
-  properties : {
-    width : 40,
-    height: 40
-  },
 
   bullets : [],
 
   bullet : function() {
-    var xstart = this.pos.x + this.properties.width/2;
-    var ystart = this.pos.y + this.properties.height/2;
+    var xstart = this.pos.x + this.settings.width/2;
+    var ystart = this.pos.y + this.settings.height/2;
     var xend = this.mouse.xpos;
     var yend = this.mouse.ypos;
     var dir = (yend - ystart) / (xend - xstart);
@@ -61,11 +60,11 @@ var Player = Backbone.Model.extend({
       if (this.pressed[key]) { // keydown
         if (key == 87 && this.pos.y >= 0) // up
           this.pos.y -= moveRate;
-        else if (key == 83 && this.pos.y <= ctx.canvas.height - this.properties.height) // down
+        else if (key == 83 && this.pos.y <= ctx.canvas.height - this.settings.height) // down
           this.pos.y += moveRate;
         else if (key == 65 && this.pos.x >= 0) // left
           this.pos.x -= moveRate;
-        else if (key == 68 && this.pos.x <= ctx.canvas.width - this.properties.width) // right
+        else if (key == 68 && this.pos.x <= ctx.canvas.width - this.settings.width) // right
           this.pos.x += moveRate;
         else if (key == 16) 
           this.settings.playerSpeed = 20;
@@ -83,7 +82,7 @@ var Player = Backbone.Model.extend({
   draw : function(ctx) {
     ctx.fillStyle = "#4D8B4D";
     ctx.beginPath();
-    ctx.rect(this.pos.x, this.pos.y, this.properties.width, this.properties.height);
+    ctx.rect(this.pos.x, this.pos.y, this.settings.width, this.settings.height);
     ctx.closePath();
     ctx.fill();
 
@@ -100,8 +99,8 @@ var Player = Backbone.Model.extend({
       bullet.x += bullet.xdir * bulletSpeed;
       bullet.y += bullet.ydir * bulletSpeed;
 
-      if (bullet.x > ctx.canvas.width || bullet.x < 0 ||
-          bullet.y > ctx.canvas.height || bullet.y < 0) {
+      if (bullet.x > ctx.canvas.width || bullet.x + this.settings.bulletSize < 0 ||
+          bullet.y > ctx.canvas.height || bullet.y + this.settings.bulletSize < 0) {
         bulletsToDelete.push(parseInt(b));
       }
     }
@@ -115,13 +114,11 @@ var Player = Backbone.Model.extend({
 
 
   drawBullets : function(ctx) {
-
+    ctx.fillStyle = "#333333";
+    var bullet;
     for ( var b in this.bullets ) {
-      var bullet = this.bullets[b];
-      ctx.fillStyle = "#333333";
-      ctx.rect(bullet.x, bullet.y, 10, 10);
-      ctx.closePath();
-      ctx.fill();
+      bullet = this.bullets[b];
+      ctx.fillRect(bullet.x, bullet.y, this.settings.bulletSize, this.settings.bulletSize);
     }
   }
     

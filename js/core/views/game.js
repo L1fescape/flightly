@@ -24,6 +24,8 @@ var GameView = Backbone.View.extend({
     $(document).bind({
       'keydown' : this.keys,
       'keyup' : this.keys,
+      'mousedown' : this.mouse,
+      'mouseup' : this.mouse
     });
     $(window).on("resize", this.resize)
 
@@ -33,6 +35,9 @@ var GameView = Backbone.View.extend({
   
   render : function() {
     this.clear();
+
+    this.player.move(this.engine.ctx);
+    this.player.draw(this.engine.ctx);
   },
 
   clear : function() {
@@ -47,8 +52,6 @@ var GameView = Backbone.View.extend({
     ctx.rect(0, 0, width, height);
     ctx.closePath();
     ctx.fill();
-
-    this.player.draw(ctx);
   },
   
   resize : function() {
@@ -64,6 +67,10 @@ var GameView = Backbone.View.extend({
 
   keys : function(e) {
     this.player.keys(e.which, e.type);
+  },
+
+  mouse : function(e) {
+    this.player.mouse(e.clientX, e.clientY, e.type);
   }
 
 });

@@ -14,23 +14,27 @@ var Player = Backbone.Model.extend({
 
   bullets : [],
 
-  mouse : function(xpos, ypos, type) {
-    if (type == "mousedown") {
-      var xstart = this.pos.x + this.properties.width/2;
-      var ystart = this.pos.y + this.properties.height/2;
-      var xend = xpos;
-      var yend = ypos;
-      var dir = (yend - ystart) / (xend - xstart);
-      var ydir = Math.sin(dir);
-      if (dir < 0)
-        ydir *= -1;
-      var xdir = Math.cos(dir); 
-      if (xend-xstart < 0)
-        xdir *= -1;
-      if (yend-ystart < 0 || dir < 0)
-        ydir *= -1;
-      this.bullets.push({x : xstart, y : ystart, xdir : xdir, ydir : ydir});
-    }
+  bullet : function() {
+    var xstart = this.pos.x + this.properties.width/2;
+    var ystart = this.pos.y + this.properties.height/2;
+    var xend = this.mouse.xpos;
+    var yend = this.mouse.ypos;
+    var dir = (yend - ystart) / (xend - xstart);
+    var ydir = Math.sin(dir);
+    if (dir < 0)
+      ydir *= -1;
+    var xdir = Math.cos(dir); 
+    if (xend-xstart < 0)
+      xdir *= -1;
+    if (yend-ystart < 0 || dir < 0)
+      ydir *= -1;
+    this.bullets.push({x : xstart, y : ystart, xdir : xdir, ydir : ydir});
+  },
+
+  mouse : {
+    down : false,
+    xpos : 0,
+    ypos : 0
   },
 
   pressed : {},
@@ -42,10 +46,19 @@ var Player = Backbone.Model.extend({
       this.pressed[key] = false
   },
 
+  mouse : function(xpos, ypos, state) {
+    this.mouse.xpos = xpos;
+    this.mouse.ypos = ypos;
+    if (state == "mousedown")
+      this.mouse.down = true;
+    else
+      this.mouse.down = false;
+  },
+
   move : function(ctx) {
     var moveRate = this.settings.playerSpeed;
     for (key in this.pressed) {
-      if (this.pressed[key]) {
+      if (this.pressed[key]) { // keydown
         if (key == 87 && this.pos.y >= 0) // up
           this.pos.y -= moveRate;
         else if (key == 83 && this.pos.y <= ctx.canvas.height - this.properties.height) // down
@@ -57,11 +70,13 @@ var Player = Backbone.Model.extend({
         else if (key == 16) 
           this.settings.playerSpeed = 20;
       }
-      else {
+      else { // keyup
         if (key == 16)
           this.settings.playerSpeed = 5;
       }
-      
+    }
+    if (this.mouse.down) {
+      this.bullet();
     }
   },
 
@@ -85,7 +100,8 @@ var Player = Backbone.Model.extend({
       bullet.x += bullet.xdir * bulletSpeed;
       bullet.y += bullet.ydir * bulletSpeed;
 
-      if (bullet.x > ctx.canvas.width || bullet.x < 0 ) {
+      if (bullet.x > ctx.canvas.width || bullet.x < 0 ||
+          bullet.y > ctx.canvas.height || bullet.y < 0) {
         bulletsToDelete.push(parseInt(b));
       }
     }

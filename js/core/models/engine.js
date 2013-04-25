@@ -11,7 +11,7 @@ var Engine = Backbone.Model.extend({
   },
   start : function() {
     clearInterval(this.interval);
-    this.interval = setInterval(this.view.render, 10);
+    this.interval = setInterval(this.view.render, 60/1000);
   },
   stop : function() {
     clearInterval(this.interval);

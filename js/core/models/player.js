@@ -2,9 +2,11 @@ var Player = Backbone.Model.extend({
   settings : {
     playerSpeed : 5,
     bulletSpeed : 10,
+    bulletRate : 20,
+    bulletSize : 2,
+    lastTimeFired : 0,
     width : 40,
     height: 40,
-    bulletSize : 10
   },
   pos : {
     x : 40,
@@ -13,21 +15,25 @@ var Player = Backbone.Model.extend({
 
   bullets : [],
 
-  bullet : function() {
-    var xstart = this.pos.x + this.settings.width/2;
-    var ystart = this.pos.y + this.settings.height/2;
-    var xend = this.mouse.xpos;
-    var yend = this.mouse.ypos;
-    var dir = (yend - ystart) / (xend - xstart);
-    var ydir = Math.sin(dir);
-    if (dir < 0)
-      ydir *= -1;
-    var xdir = Math.cos(dir); 
-    if (xend-xstart < 0)
-      xdir *= -1;
-    if (yend-ystart < 0 || dir < 0)
-      ydir *= -1;
-    this.bullets.push({x : xstart, y : ystart, xdir : xdir, ydir : ydir});
+  fire : function() {
+    var curSeconds = (new Date).getTime();
+    if (curSeconds - this.settings.lastTimeFired > this.settings.bulletRate) {
+      this.settings.lastTimeFired = curSeconds;
+      // start inside player
+      var xplayer = this.pos.x + this.settings.width/2;
+      var yplayer = this.pos.y + this.settings.height/2;
+      var xmouse = this.mouse.xpos;
+      var ymouse = this.mouse.ypos;
+      // get slope
+      var angleRadian = Math.atan2(ymouse - yplayer, xmouse - xplayer);
+      // calculate x and y directions
+      var ydir = Math.sin(angleRadian);
+      var xdir = Math.cos(angleRadian); 
+      console.log(ydir, xdir)
+      // bullet rotation
+      var rotation = angleRadian * 180 / Math.PI;
+      this.bullets.push({x : xplayer, y : yplayer, xdir : xdir, ydir : ydir, rotation : rotation});
+    }
   },
 
   mouse : {
@@ -50,7 +56,7 @@ var Player = Backbone.Model.extend({
     this.mouse.ypos = ypos;
     if (state == "mousedown")
       this.mouse.down = true;
-    else
+    else if (state == "mouseup")
       this.mouse.down = false;
   },
 
@@ -75,7 +81,7 @@ var Player = Backbone.Model.extend({
       }
     }
     if (this.mouse.down) {
-      this.bullet();
+      this.fire();
     }
   },
 
@@ -118,7 +124,7 @@ var Player = Backbone.Model.extend({
     var bullet;
     for ( var b in this.bullets ) {
       bullet = this.bullets[b];
-      ctx.fillRect(bullet.x, bullet.y, this.settings.bulletSize, this.settings.bulletSize);
+      ctx.fillRect(bullet.x, bullet.y, this.settings.bulletSize * 2, this.settings.bulletSize);
     }
   }
     

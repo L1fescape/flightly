@@ -25,7 +25,8 @@ var GameView = Backbone.View.extend({
       'keydown' : this.keys,
       'keyup' : this.keys,
       'mousedown' : this.mouse,
-      'mouseup' : this.mouse
+      'mouseup' : this.mouse,
+      'mousemove' : this.mouse
     });
     $(window).on("resize", this.resize)
 
